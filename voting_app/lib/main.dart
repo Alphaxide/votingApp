@@ -21,7 +21,7 @@ class VotingPage extends StatefulWidget {
 
 class _VotingPageState extends State<VotingPage> {
   final BlockchainService _blockchainService = BlockchainService();
-  List<dynamic> candidates = [];
+  List<Map<String, dynamic>> candidates = [];
 
   @override
   void initState() {
@@ -37,8 +37,9 @@ class _VotingPageState extends State<VotingPage> {
     });
   }
 
-  void _vote(int id) async {
-    await _blockchainService.vote(id);
+  void _vote(int candidateId) async {
+    await _blockchainService.vote(candidateId);
+    // Reload the candidates after voting to update the UI
     _loadCandidates();
   }
 
@@ -51,11 +52,12 @@ class _VotingPageState extends State<VotingPage> {
           : ListView.builder(
               itemCount: candidates.length,
               itemBuilder: (context, index) {
+                final candidate = candidates[index];
                 return ListTile(
-                  title: Text("Candidate ${index + 1}"),
-                  subtitle: Text("Votes: ${candidates[index].voteCount}"),
+                  title: Text(candidate['name']),
+                  subtitle: Text("Votes: ${candidate['voteCount']}"),
                   trailing: ElevatedButton(
-                    onPressed: () => _vote(index + 1),
+                    onPressed: () => _vote(candidate['id']),
                     child: Text("Vote"),
                   ),
                 );
